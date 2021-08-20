@@ -218,7 +218,7 @@ def sample_plot_on_map(dataframe, kpi, geoplotting_datafile, color_set):
 
     folium.TileLayer('Stamen Terrain').add_to(map)
     folium.TileLayer('CartoDB positron').add_to(map)
-    folium.TileLayer('Mapbox Bright').add_to(map)
+    #folium.TileLayer('Mapbox Bright').add_to(map)
     #folium.TileLayer('Cloudmade').add_to(map)
     #folium.TileLayer('Mapbox').add_to(map)
     folium.LayerControl().add_to(map)

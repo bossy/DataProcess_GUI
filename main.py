@@ -444,7 +444,7 @@ if DT_TYPE == '4G_DT':
     RSRP_BIN_KPI = 'LTE KPI PCell Serving RSRP [dBm]'
     AREA_BINNING_SIZE = 20
     STATISTICS_LIST = lte_ssv_dl_thp_export_list
-    dt_trace = "C:\Work\Spark_5G\Dunidin\Field_Test\DN2\\Pre_TC9_CA_DL_PS LONG CALL_KPIs Export_DN2_RSRP Filter.xlsx"
+    dt_trace = "C:\Work\Spark_5G\Dunedin\Field_Test\DN2\\Pre_TC9_CA_DL_PS LONG CALL_KPIs Export_DN2_RSRP Filter.xlsx"
 
 if DT_TYPE == '5G_DT':
 # Drive Test Data Input for 5G20A feature
