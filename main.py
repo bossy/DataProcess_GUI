@@ -3,7 +3,9 @@ import datetime
 import pandas as pd
 import numpy
 
-
+import sys
+from PyQt5.QtCore import Qt, QStringListModel
+from PyQt5.QtWidgets import *
 from data_process import *
 
 SSV_THROUGHPUT_PERIOD = 60  # seconds
@@ -646,6 +648,114 @@ def drive_test_post_process(tracefile):
 
     statistics_dt_kpi_to_excel(statistics_datafile, binning_data, STATISTICS_LIST)
 
+
+def show_message_box(text, message_type):
+    msg = QMessageBox()
+
+    if message_type == "Question":
+        msg.setIcon(QMessageBox.Question)
+        msg.setWindowTitle("Question")
+    elif message_type == "Warning":
+        msg.setIcon(QMessageBox.Warning)
+        msg.setWindowTitle("Warning")
+    elif message_type == "Critical":
+        msg.setIcon(QMessageBox.Critical)
+        msg.setWindowTitle("Critical")
+    else: # "Information"
+        msg.setIcon(QMessageBox.Information)
+        msg.setWindowTitle("Information")
+
+    msg.setText(text)
+    #msg.setInformativeText("This is additional information")
+    #msg.setDetailedText("The details are as follows:")
+    #msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+
+    msg.exec_()
+
+
+class DataProcessMainWindow(QMainWindow):
+    """Main Window."""
+    def __init__(self, parent=None):
+        """Initializer."""
+        super().__init__(parent)
+        self.fileList = QStringListModel()
+        self.setWindowTitle("Data Processing")
+        self.resize(1200, 800)
+        self.centralWidget = QLabel("Hello, World")
+        self.centralWidget.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.setCentralWidget(self.centralWidget)
+
+        self._create_actions()
+        self._create_menu_bar()
+        self._create_widget()
+        self._connect_actions()
+
+    def _create_actions(self):
+        # Creating action using the first constructor
+        self.importAction = QAction(self)
+        self.importAction.setText("&Import...")
+        # Creating actions using the second constructor
+        self.exportAction = QAction("E&xport...", self)
+        self.exitAction = QAction("&Exit", self)
+        self.copyAction = QAction("&Copy", self)
+        self.pasteAction = QAction("&Paste", self)
+        self.cutAction = QAction("C&ut", self)
+        self.helpContentAction = QAction("&Help Content", self)
+        self.aboutAction = QAction("&About", self)
+
+    def _create_menu_bar(self):
+        menuBar = QMenuBar(self)
+        self.setMenuBar(menuBar)
+        # Creating menus using a QMenu object
+        fileMenu = QMenu("&File", self)
+        menuBar.addMenu(fileMenu)
+        # Creating menus using a title
+        editMenu = menuBar.addMenu("&Edit")
+        helpMenu = menuBar.addMenu("&Help")
+        #fileMenu.addMenu("&Import...")
+        #fileMenu.addMenu("&Exit")
+
+        fileMenu.addAction(self.importAction)
+        fileMenu.addAction(self.exportAction)
+        fileMenu.addAction(self.exitAction)
+
+    def _connect_actions(self):
+        # Connect File actions
+        self.importAction.triggered.connect(self.import_data)
+        self.exportAction.triggered.connect(self.export_data)
+
+    def _create_widget(self):
+        vlayout = QVBoxLayout()
+        self.dataListView = QListView()
+        self.dataListView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.dataListView.setModel(self.fileList)
+        self.dock = QDockWidget("Data List", self)
+        self.dock.setWidget(self.dataListView)
+        self.addDockWidget(Qt.TopDockWidgetArea, self.dock)
+
+        #self.setLayout(vlayout)
+
+    def import_data(self):
+        # Logic for opening an existing file goes here...
+        self.centralWidget.setText("<b>File > Import...</b> clicked")
+        self.open_filename_dialog()
+
+    def export_data(self):
+        # Logic for opening an existing file goes here...
+        self.centralWidget.setText("<b>File > Export...</b> clicked")
+
+    def open_filename_dialog(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "", "All Files (*);;Python Files (*.py)", options=options)
+        if fileName:
+            if not fileName in self.fileList.stringList():
+                self.centralWidget.setText(fileName)
+                self.fileList.insertRow(0)
+                self.fileList.setData(self.fileList.index(0), fileName)
+            else:
+                show_message_box(fileName + " has been loaded.", "Information")
+
 if __name__ == '__main__':
 
     # best_ssv_avg_data, best_ssv_avg_timestamp = calculate_best_avg_ssv_kpi(data, XCAL_TIME_STAMP, SSV_DL_THROUGHPUT_KPI,
@@ -660,7 +770,11 @@ if __name__ == '__main__':
     #plot_ssv_kpi_to_pdf(result_output_file_charts, data, XCAL_TIME_STAMP, endc_ssv_dl_thp_export_list, best_ssv_avg_timestamp, SSV_THROUGHPUT_PERIOD)
     #ssv_kpi_summary(trace_folder)
 
-    drive_test_post_process(dt_trace)
+    app = QApplication(sys.argv)
+    win = DataProcessMainWindow()
+    win.show()
+    sys.exit(app.exec_())
+    #drive_test_post_process(dt_trace)
 
 
 
