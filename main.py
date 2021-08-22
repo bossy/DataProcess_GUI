@@ -690,6 +690,7 @@ class DataProcessMainWindow(QMainWindow):
         self._create_widget()
         self._connect_actions()
 
+
     def _create_actions(self):
         # Creating action using the first constructor
         self.importAction = QAction(self)
